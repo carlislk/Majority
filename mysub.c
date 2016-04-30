@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yScore, int* used);
-void calcMax(int n,int* start, int* x1, int* x2, int* y1, int* xScore, int* yScore);
+void calcMax(int n,int* s, int* x1, int* x2, int* y1, int* xScore, int* yScore);
 
 
 int mysub(int n)
@@ -44,14 +44,33 @@ int mysub(int n)
 	if ( used < n && xScore < (n/2)+1 && yScore < (n/2)+1 )
 	{ 
 		// Run calcMax until end of array or until either score is > array_size/2. 
-		//calcMax(n, &used, &x1, &x2, &y1, &xScore, &yScore);
-		printf("\n");
+		calcMax(n, &used, &x1, &x2, &y1, &xScore, &yScore);
 	}
 
-	printf("X1: %d X2: %d Y1: %d\n", x1, x2, y1);
-	printf("xScore: %d yScore %d Used: %d\n", xScore, yScore, used);
+	//printf("X1: %d X2: %d Y1: %d\n", x1, x2, y1);
+	//printf("xScore: %d yScore %d Used: %d\n", xScore, yScore, used);
+	//printf("SIZE/2+1: %d\n", (n/2)+1);
+	//printf("SIZE: %d\n", n);
 
 
+	if ( xScore > yScore )
+	{
+		//printf("Result: %d\n", x1);
+
+		return x1;
+	}
+	else if ( yScore > xScore )
+	{
+		//printf("Result: %d\n", y1);
+
+		return y1;
+	}
+	else 
+	{
+		//printf("Result: %d\n", 0);
+
+		return 0;
+	}
 
 
 }
@@ -89,7 +108,7 @@ void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* 
 
 	}
 
-	printf("\n\nQ1: %d Q2: %d\n", r1, r2);
+	//printf("\n\nQ1: %d Q2: %d\n", r1, r2);
 
 	if ( r1 == 0 && r2 == 2)
 	{
@@ -293,7 +312,7 @@ void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* 
 		*x2 = 2;
 
 		// Set Y1
-		*y1 = 5;
+		*y1 = 5 + s;
 
 		// Set Scores
 		*xScore = *xScore + s + 4;
@@ -308,7 +327,25 @@ void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* 
 		// 4, 4 
 		// Need to Check Next Pos
 		// Make recursive call 
-		identifyIndexes(n, s+1, x1, x2, y1, xScore, yScore, used);
+		if ( s + 5 < (n/2 + 1) )
+		{
+			// If not indexing outside of the array
+			identifyIndexes(n, s+1, x1, x2, y1, xScore, yScore, used);
+
+		}
+		else
+		{
+			// If array is filled with same number 000...0
+			// Only need to look at half the array to determine max element. 
+			*used = n/2 +1;
+			*xScore = n/2 + 1;
+			*yScore = 0;
+
+			*x1 = 1;
+			*x2 = 2;
+			// Set y1 -1 indicate not found
+			*y1 = -1;
+		}
 
 	}
 	else
@@ -316,13 +353,89 @@ void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* 
 		// All Cases Should be Handled
 		printf("Error** - Else Not Handled\n");
 	}
-
-
 }
 
-void calcMax(int n,int* start, int* x1, int* x2, int* y1, int* xScore, int* yScore)
+void calcMax(int n, int* s, int* x1, int* x2, int* y1, int* xScore, int* yScore)
 {
-	printf("calcMax\n");
+	//printf("calcMax\n");
+	int r;
+	//printf("xScore: %d yScore %d Used: %d\n", *xScore, *yScore, *s);
+
+	// Used Saved Values X1 & X2 to make queries
+	//while ( (*s + 1) < n && *xScore < ((n/2)+2) && (*yScore < (n/2)+2) )
+	while ( (*s +2 ) <= n  )
+
+	{
+
+		int q[4] = {*x1, *x2, *s+1, *s+2};
+
+		// Set Result
+		r = QCOUNT(1, q);
+
+		// increment s
+		*s += 2;
+
+		// Determine cases to score X & Y
+		if ( r == 0 )
+		{
+			// xxyy
+			*yScore += 2;
+		}
+		else if ( r == 2 )
+		{
+			// xxxy || xxyx
+			*xScore += 1;
+			*yScore += 1;
+		}
+		else if ( r == 4)
+		{
+			// xxxx
+			*xScore += 2;
+		}
+		else
+		{
+			// Error 
+			printf("***ERROR CALC MAX: %d\n", r);
+		}
+		//printf("xScore: %d yScore %d Used: %d\n", *xScore, *yScore, *s);
+
+
+
+	}
+	//printf("BEFORE SINGLE CASE: S: %d N/2+1: %d\n", *s, (n/2)+1);
+	// Handle Single Case
+	//if ( *xScore < (n/2)+1 && *yScore < (n/2)+1 && *s <= n)
+	if (  *s <= n)
+
+	{
+		// S will be incremented past n to break out of above for loop
+		// Run query on last remaining index
+		int q[4] = {*x1, *x2, *y1, *s+1};
+
+		// Update s
+		*s += 1;
+
+		// Set Result
+		r = QCOUNT(1, q);
+
+		// Determine case to score X & Y
+		if ( r == 0 )
+		{
+			// xxyy
+			*yScore +=1;
+		}
+		else if ( r == 2 )
+		{
+			// xxyx
+			*xScore +=1;
+		}
+
+		//printf("Inside Single CASE: S: %d N/2+1: %d\n", *s, (n/2)+1);
+
+		//printf("xScore: %d yScore %d Used: %d\n", *xScore, *yScore, *s);
+
+
+	}
 
 }
 
