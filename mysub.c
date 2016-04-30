@@ -52,7 +52,6 @@ int mysub(int n)
 	//printf("SIZE/2+1: %d\n", (n/2)+1);
 	//printf("SIZE: %d\n", n);
 
-
 	if ( xScore > yScore )
 	{
 		//printf("Result: %d\n", x1);
@@ -362,8 +361,8 @@ void calcMax(int n, int* s, int* x1, int* x2, int* y1, int* xScore, int* yScore)
 	//printf("xScore: %d yScore %d Used: %d\n", *xScore, *yScore, *s);
 
 	// Used Saved Values X1 & X2 to make queries
-	//while ( (*s + 1) < n && *xScore < ((n/2)+2) && (*yScore < (n/2)+2) )
-	while ( (*s +2 ) <= n  )
+	while ( (*s + 2) <= n && *xScore < ((n/2)+1) && (*yScore < (n/2)+1) )
+	//while ( (*s +2 ) <= n  )
 
 	{
 
