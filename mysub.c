@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 
-void identifyIndexes(int n, int* x1, int* x2, int* y1, int* xScore, int* yScore, int* used);
+void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yScore, int* used);
 void calcMax(int n,int* start, int* x1, int* x2, int* y1, int* xScore, int* yScore);
 
 
@@ -29,7 +29,7 @@ int mysub(int n)
 	int yScore = 0;
 
 	// Call Function to Identify Indexes
-	identifyIndexes(n, &x1, &x2, &y1, &xScore, &yScore, &used);
+	identifyIndexes(n, 0, &x1, &x2, &y1, &xScore, &yScore, &used);
 
 
 	/*
@@ -56,19 +56,38 @@ int mysub(int n)
 
 }
 
-void identifyIndexes(int n, int* x1, int* x2, int* y1, int* xScore, int* yScore, int* used)
+void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yScore, int* used)
 {
 	// Determine Indexes for X1, X2, Y1
 	// Determine Scores for X & Y
 	// Update Used
+	int r1;
+	int r2;
 
-	// Run Two Queries
-	int q1[4] = {1,2,3,4};
-	int q2[4] = {2,3,4,5};
+	if ( s == 0 )
+	{	
+		// Initial Query - Not Recursive Call
+		// Run Two Queries
+		int q1[4] = {1,2,3,4};
+		int q2[4] = {2,3,4,5};
 
-	// Results of Two Queries  QCOUNT - External Function Compares Array Elements
-	int r1 = QCOUNT(1, q1);
-	int r2 = QCOUNT(1, q2);
+		// Results of Two Queries  QCOUNT - External Function Compares Array Elements
+		r1 = QCOUNT(1, q1);
+		r2 = QCOUNT(1, q2);
+	}
+	else
+	{
+		// Not Initial Check - Recursive Call
+		// Know that Last 2 Queries -> 4, 4
+		// Want to shift over 1 pos
+		
+		int q[4] = {s+2, s+3, s+4, s+5};
+
+		// Set Results
+		r1 = 4;
+		r2 = QCOUNT(1, q);
+
+	}
 
 	printf("\n\nQ1: %d Q2: %d\n", r1, r2);
 
@@ -267,6 +286,8 @@ void identifyIndexes(int n, int* x1, int* x2, int* y1, int* xScore, int* yScore,
 	{
 		// 4, 2 
 
+		// ** Only End Case for Recursive Call **
+
 		// Set X1 & X2
 		*x1 = 1;
 		*x2 = 2;
@@ -275,16 +296,19 @@ void identifyIndexes(int n, int* x1, int* x2, int* y1, int* xScore, int* yScore,
 		*y1 = 5;
 
 		// Set Scores
-		*xScore = 4;
+		*xScore = *xScore + s + 4;
 		*yScore = 1;
 
 		// Update Used
-		*used = 5;
+		*used = *used + s +  5;
 
 	}
 	else if ( r1 == 4 && r2 == 4)
 	{
 		// 4, 4 
+		// Need to Check Next Pos
+		// Make recursive call 
+		identifyIndexes(n, s+1, x1, x2, y1, xScore, yScore, used);
 
 	}
 	else
