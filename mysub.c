@@ -40,6 +40,39 @@ int mysub(int n)
 
 	*/
 
+	/*
+		Ideas
+		
+		After Idenfity Indexes. 
+
+		Query 4 at a time the entire array. 
+
+			If QCOUNT -> 0:
+				Increment both X & Y : 2
+				Drop Indices
+
+			If QCOUNT -> 4:
+				Add Indices to new array -> A
+				
+				If 2 or more:
+					for each pair of indices
+					query X1, X2, one from each 
+					QCOUNT(X1, X2, A[0][0], A[1][0])
+
+					if result == 0
+						increment Y 8
+					if result == 4
+						increment X 8
+					if result == 2
+						increment X 4 Y 4
+
+				If only one 4 found/left:
+					query by itself with X1, X2
+
+
+
+	*/
+
 	// Skip calcMax if max is already determined
 	if ( used < n && xScore < (n/2)+1 && yScore < (n/2)+1 )
 	{ 
