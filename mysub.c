@@ -68,6 +68,11 @@ int mysub(int n)
 
 				If only one 4 found/left:
 					query by itself with X1, X2
+			
+			If QCOUNT -> 2:
+				Add Indicies to new array -> B
+
+				** Find ways to process B.
 
 
 
