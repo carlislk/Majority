@@ -494,6 +494,10 @@ void exploreByFour(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yS
 		// ** 
 		// ** CHECK FOR EARLY STOPAGE
 		// **
+		if (*xScore > (n/2)+1 || *yScore > (n/2)+1)
+		{
+			return;
+		}
 	}
 
 
@@ -513,44 +517,6 @@ void exploreByFour(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yS
 	if (stopage == 1) { return;}
 
 
-	// int fours = 0;
-	// int twos = 0;
-	// int zeros = 0;
-	// int errors = 0;
-
-	// for ( i = 0; i < l; i++)
-	// {
-	// 	if ( results[i] == 0)
-	// 	{
-	// 		zeros++;
-	// 	}
-	// 	else if ( results[i] == 2)
-	// 	{
-	// 		twos++;
-	// 	}
-	// 	else if ( results[i] == 4)
-	// 	{
-	// 		fours++;
-	// 	}
-	// 	else 
-	// 	{
-	// 		errors++;
-	// 	}
-	// }
-
-	// // printf("4: %d, 2: %d, 0: %d E: %d\n", fours, twos, zeros, errors);
-
-	// //// Remaining Not Divisible by 4
-	// int k;
-	// for ( k = i + 1; k <= n; k++)
-	// {
-	// 	printf("%d ", k);
-	// }
-	// printf("**\n");
-
-	//printf("%d %d %d %d \n", i*4, n,(n-*used)/4,(n-*used)%4 );
-
-
 	// Handle Left Over 
 	int left = (n-*used)%4;
 
@@ -558,107 +524,6 @@ void exploreByFour(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yS
 
 	*used = n-left;
 
-	// if ( left == 1)
-	// {
-	// 	int temp[4] = { *x1, *x2, *y1, n };
-		
-	// 	int r = QCOUNT(1, temp);
-
-	// 	if ( r == 0)
-	// 	{
-	// 		// 110 0 
-	// 		*yScore += 1;
-	// 	}
-	// 	else if ( r == 2)
-	// 	{
-	// 		// 110 1
-	// 		*xScore += 1;
-	// 	}
-	// 	else 
-	// 	{
-	// 		perror("QCOUNT - Invalid Result");
-	// 	}
-
-	// }
-	// else if ( left == 2)
-	// {
-	// 	int temp[4] = { *x1, *x2, n-1, n };
-		
-	// 	int r = QCOUNT(1, temp);
-
-	// 	if ( r == 0)
-	// 	{
-	// 		// 11 00 
-	// 		*yScore += 2;
-	// 	}
-	// 	else if ( r == 2)
-	// 	{
-	// 		// 11 01
-	// 		*xScore += 1;
-	// 		*yScore += 1;
-	// 	}
-	// 	else if ( r == 4)
-	// 	{
-	// 		// 11 11
-	// 		*xScore += 2;
-
-	// 	}
-	// 	else 
-	// 	{
-	// 		perror("QCOUNT - Invalid Result");
-	// 	}
-
-	// }
-	// else if ( left == 3)
-	// {
-	// 	int temp[4] = { *x1, *x2, n-1, n };
-		
-	// 	int r = QCOUNT(1, temp);
-
-	// 	if ( r == 0)
-	// 	{
-	// 		// 11 00 
-	// 		*yScore += 2;
-	// 	}
-	// 	else if ( r == 2)
-	// 	{
-	// 		// 11 01
-	// 		*xScore += 1;
-	// 		*yScore += 1;
-	// 	}
-	// 	else if ( r == 4)
-	// 	{
-	// 		// 11 11
-	// 		*xScore += 2;
-
-	// 	}
-	// 	else 
-	// 	{
-	// 		perror("QCOUNT - Invalid Result");
-	// 	}
-
-	// 	int temp2[4] = { *x1, *x2, *y1, n };
-		
-	// 	r = QCOUNT(1, temp2);
-
-	// 	if ( r == 0)
-	// 	{
-	// 		// 110 0 
-	// 		*yScore += 1;
-	// 	}
-	// 	else if ( r == 2)
-	// 	{
-	// 		// 110 1
-	// 		*xScore += 1;
-	// 	}
-	// 	else 
-	// 	{
-	// 		perror("QCOUNT - Invalid Result");
-	// 	}
-
-
-
-	//}
 }
 
 void processTwos(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yScore, int* used,
@@ -726,6 +591,11 @@ void processTwos(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* ySco
 			perror("QCOUNT - Invalid Result 2");
 		}
 
+		if (*xScore > (n/2)+1 || *yScore > (n/2)+1)
+		{
+			return;
+		}
+
 	}
 }
 
@@ -767,9 +637,15 @@ void processFours(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* ySc
 			perror("QCOUNT - Invalid Result 3");
 		}
 
+		if (*xScore > (n/2)+1 || *yScore > (n/2)+1)
+		{
+			return;
+		}
+
 		
 		c++;
 	}
+
 	// Handle Last Cast
 	if (c*2 != fourLen)
 	{
@@ -849,8 +725,16 @@ void calcMax(int n, int* s, int* x1, int* x2, int* y1, int* xScore, int* yScore)
 		}
 		//printf("xScore: %d yScore %d Used: %d\n", *xScore, *yScore, *s);
 
+		if (*xScore > (n/2)+1 || *yScore > (n/2)+1)
+		{
+			return;
+		}
 
+	}
 
+	if (*xScore > (n/2)+1 || *yScore > (n/2)+1)
+	{
+		return;
 	}
 	//printf("BEFORE SINGLE CASE: S: %d N/2+1: %d\n", *s, (n/2)+1);
 	// Handle Single Case
