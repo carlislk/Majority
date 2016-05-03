@@ -8,25 +8,21 @@
 
 */
 
-
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 
 void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yScore, int* used);
 void exploreByFour(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yScore, int* used);
-
 void processTwos(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yScore, int* used,
-	int indicesArray[], int twosArray[], int twoLen, int l, int* stopage);
+					int indicesArray[], int twosArray[], int twoLen, int l);
 void processFours(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yScore, int* used,
-	int indicesArray[], int foursArray[], int fourLen,  int l, int* stopage);
-
-void calcMax(int n,int* s, int* x1, int* x2, int* y1, int* xScore, int* yScore);
+					int indicesArray[], int foursArray[], int fourLen,  int l);
+void processRemaining(int n,int* s, int* x1, int* x2, int* y1, int* xScore, int* yScore);
 
 
 int mysub(int n)
 {
-
 	// Indexes
 	int x1 = 0;
 	int x2 = 0;
@@ -40,89 +36,29 @@ int mysub(int n)
 	// Call Function to Identify Indexes
 	identifyIndexes(n, 0, &x1, &x2, &y1, &xScore, &yScore, &used);
 
-
 	/*
 		Identify Indexes has used "used" 
 		elements to determine 2 pos for X
 		& 1 for Y. Has also scored "used"
 		indexes to scores of X or Y.
-
-	*/
-
-	/*
-		Ideas
-		
-		After Idenfity Indexes. 
-
-		Query 4 at a time the entire array. 
-
-			If QCOUNT -> 0:
-				Increment both X & Y : 2
-				Drop Indices
-
-			If QCOUNT -> 4:
-				Add Indices to new array -> A
-				
-				If 2 or more:
-					for each pair of indices
-					query X1, X2, one from each 
-					QCOUNT(X1, X2, A[0][0], A[1][0])
-
-					if result == 0
-						increment Y 8
-					if result == 4
-						increment X 8
-					if result == 2
-						increment X 4 Y 4
-
-				If only one 4 found/left:
-					query by itself with X1, X2
-			
-			If QCOUNT -> 2:
-				Add Indicies to new array -> B
-
-				** Find ways to process B.
 	*/
 
 	// Process By Fours
 	exploreByFour(n, 0, &x1, &x2, &y1, &xScore, &yScore, &used);
 
-
-
-	// Skip calcMax if max is already determined
+	// Skip processRemaining if max is already determined
 	if ( used < n && xScore < (n/2)+1 && yScore < (n/2)+1 )
 	{ 
-		// Run calcMax until end of array or until either score is > array_size/2. 
-		calcMax(n, &used, &x1, &x2, &y1, &xScore, &yScore);
+		// Run processRemaining until end of array or until either score is > array_size/2. 
+		processRemaining(n, &used, &x1, &x2, &y1, &xScore, &yScore);
 	}
 
-	// printf("X1: %d X2: %d Y1: %d\n", x1, x2, y1);
-	// printf("xScore: %d yScore %d Used: %d\n", xScore, yScore, used);
-	// printf("SIZE/2+1: %d\n", (n/2)+1);
-	// printf("SIZE: %d\n", n);
-
-	if ( xScore > yScore )
-	{
-		//printf("Result: %d\n", x1);
-
-		return x1;
-	}
-	else if ( yScore > xScore )
-	{
-		//printf("Result: %d\n", y1);
-
-		return y1;
-	}
-	else 
-	{
-		//printf("Result: %d\n", 0);
-
-		return 0;
-	}
-
+	// Return Result - Index Of Majority Element Or 0 if no majority element
+	if      ( xScore > yScore ) { return x1; }
+	else if ( yScore > xScore ) { return y1; }
+	else                        { return 0;  }
 
 }
-
 
 void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yScore, int* used)
 {
@@ -148,17 +84,14 @@ void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* 
 		// Not Initial Check - Recursive Call
 		// Know that Last 2 Queries -> 4, 4
 		// Want to shift over 1 pos
-		
 		int q[4] = {s+2, s+3, s+4, s+5};
 
 		// Set Results
 		r1 = 4;
 		r2 = QCOUNT(1, q);
-
 	}
 
-	//printf("\n\nQ1: %d Q2: %d\n", r1, r2);
-
+	// Handle Cases of R1 & R2
 	if ( r1 == 0 && r2 == 2)
 	{
 		// 0, 2
@@ -194,13 +127,10 @@ void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* 
 
 		// Update Used
 		*used = 5;
-
 	}
 	else if ( r1 == 2 && r2 == 0)
 	{
 		// 2, 0
-
-		// CODED AT NIGHT RECHECK!!
 
 		// Set X1 & Y1
 		*x1 = 1;
@@ -238,8 +168,6 @@ void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* 
 	{
 		// 0, 0
 
-		// CODED AT NIGHT RECHECK!!
-
 		// Set X1 & X2
 		*x1 = 1;
 		*x2 = 5;
@@ -271,13 +199,10 @@ void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* 
 
 		// Update Used
 		*used = 5;
-
 	}
 	else if ( r1 == 2 && r2 == 2)
 	{
 		// 2, 2
-
-		// CODED AT NIGHT RECHECK!!
 
 		// Set X1 & X2
 		*x1 = 1;
@@ -329,7 +254,6 @@ void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* 
 
 		// Update Used
 		*used = 5;
-
 	}
 	else if ( r1 == 2 && r2 == 4)
 	{
@@ -348,7 +272,6 @@ void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* 
 
 		// Update Used
 		*used = 5;
-
 	}
 	else if ( r1 == 4 && r2 == 2)
 	{
@@ -380,7 +303,6 @@ void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* 
 		{
 			// If not indexing outside of the array
 			identifyIndexes(n, s+1, x1, x2, y1, xScore, yScore, used);
-
 		}
 		else
 		{
@@ -395,12 +317,10 @@ void identifyIndexes(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* 
 			// Set y1 -1 indicate not found
 			*y1 = -1;
 		}
-
 	}
 	else
 	{
 		// All Cases Should be Handled
-		printf("Error** - Else Not Handled\n");
 		perror("QCOUNT Error - Identify Indices");
 	}
 }
@@ -410,20 +330,17 @@ void exploreByFour(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yS
 	// n Size of Initial Array
 	// s Depth of Recursive call 0 if none
 
-
 	// Count 4's
 
-	// Break up original into list of list
+	// Break up original indicies array into seperate arrays
 
 	int i, j;
 	// Calculate Number of 4's Array
 	int l = (n-*used)/4;
 	// Create Two Dimensional Array of size l
-	int indicesArray[l][4];
-	int ia[l*4];
+	int indicesMD[l][4];
+	int indicesSD[l*4];
 
-	// Create Result Array
-	int results[l];
 	// Create Array of Indicies with Query Result of 2
 	int twosArray[l];
 	memset(twosArray, -1, l*sizeof(int));
@@ -435,16 +352,17 @@ void exploreByFour(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yS
 	// Fill Array with Indicies 
 	for ( i = *used, j = 0; i + 4 <= n; i += 4, j++ )
 	{
-		indicesArray[j][0] = i+1;
-		indicesArray[j][1] = i+2;
-		indicesArray[j][2] = i+3;
-		indicesArray[j][3] = i+4;
+		// Multi Dimensional
+		indicesMD[j][0] = i+1;
+		indicesMD[j][1] = i+2;
+		indicesMD[j][2] = i+3;
+		indicesMD[j][3] = i+4;
 
 		// Single Dimensional
-		ia[j] = i+1;
-		ia[j+1] = i+2;
-		ia[j+2] = i+3;
-		ia[j+3] = i+4;
+		indicesSD[j] = i+1;
+		indicesSD[j+1] = i+2;
+		indicesSD[j+2] = i+3;
+		indicesSD[j+3] = i+4;
 	}
 
 	// Query Four Array & Store in FourResults	
@@ -452,11 +370,7 @@ void exploreByFour(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yS
 	int foursCounter = 0;
 	for ( i = 0; i < l; i++)
 	{
-		int temp = QCOUNT(1, indicesArray[i]);
-
-		// ** REMOVE BELOW **
-		results[i] = temp;
-		// ** REMOVE ABOVE **
+		int temp = QCOUNT(1, indicesMD[i]);
 
 		// Split By Result
 		if ( temp == 0)
@@ -490,44 +404,27 @@ void exploreByFour(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yS
 
 		}
 
-
-		// ** 
-		// ** CHECK FOR EARLY STOPAGE
-		// **
+		// CHECK FOR EARLY STOPAGE
 		if (*xScore > (n/2)+1 || *yScore > (n/2)+1)
 		{
 			return;
 		}
 	}
 
-
-	// Early Stopage
-	int stopage = 0;
-
 	// Process 4's Array
-	processFours(n, 0, x1, x2, y1, xScore, yScore, used, ia, foursArray, foursCounter, l, &stopage);
-
-	// If early Stopage Return
-	if (stopage == 1) { return;}
+	processFours(n, 0, x1, x2, y1, xScore, yScore, used, indicesSD, foursArray, foursCounter, l);
 
 	// Process 2's Array
-	processTwos(n, 0, x1, x2, y1, xScore, yScore, used, ia, twosArray, twosCounter, l, &stopage);
+	processTwos(n, 0, x1, x2, y1, xScore, yScore, used, indicesSD, twosArray, twosCounter, l);
 
-	// If early Stopage Return
-	if (stopage == 1) { return;}
-
-
-	// Handle Left Over 
+	// Set Used To Handle Left Over
 	int left = (n-*used)%4;
-
-	//printf("left: %d\n", left);
-
 	*used = n-left;
 
 }
 
 void processTwos(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yScore, int* used,
-	int indicesArray[], int twosArray[], int twoLen, int l, int* stopage)
+	int indicesArray[], int twosArray[], int twoLen, int l)
 {
 	int i; 
 	int j;
@@ -582,13 +479,13 @@ void processTwos(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* ySco
 			}
 			else 
 			{
-				perror("QCOUNT - Invalid Result 1");
+				perror("QCOUNT - Invalid Result - Process Twos Else If Else");
 			}
 			
 		}
 		else 
 		{
-			perror("QCOUNT - Invalid Result 2");
+			perror("QCOUNT - Invalid Result - Process Twos Else");
 		}
 
 		if (*xScore > (n/2)+1 || *yScore > (n/2)+1)
@@ -600,7 +497,7 @@ void processTwos(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* ySco
 }
 
 void processFours(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yScore, int* used,
-	int indicesArray[], int foursArray[], int fourLen, int l,  int* stopage)
+	int indicesArray[], int foursArray[], int fourLen, int l)
 {
 	int i;
 	int j = 0;
@@ -634,16 +531,21 @@ void processFours(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* ySc
 		}
 		else 
 		{
-			perror("QCOUNT - Invalid Result 3");
+			perror("QCOUNT - Invalid Result - Process Fours Else");
 		}
 
+		// Early Stoppage
 		if (*xScore > (n/2)+1 || *yScore > (n/2)+1)
 		{
 			return;
 		}
-
-		
 		c++;
+	}
+
+	// Early Stoppage
+	if (*xScore > (n/2)+1 || *yScore > (n/2)+1)
+	{
+		return;
 	}
 
 	// Handle Last Cast
@@ -675,22 +577,18 @@ void processFours(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* ySc
 		}
 		else 
 		{
-			printf("QCOUNT - Invalid Result 4 V1: %d V2: %d\n", v1, v2);
+			perror("QCOUNT - Invalid Result - Process Fours Last Case");
 		}
 
 	}
 }
 
-void calcMax(int n, int* s, int* x1, int* x2, int* y1, int* xScore, int* yScore)
+void processRemaining(int n, int* s, int* x1, int* x2, int* y1, int* xScore, int* yScore)
 {
-	//printf("calcMax\n");
 	int r;
-	//printf("xScore: %d yScore %d Used: %d\n", *xScore, *yScore, *s);
 
 	// Used Saved Values X1 & X2 to make queries
 	while ( (*s + 2) <= n && *xScore < ((n/2)+1) && (*yScore < (n/2)+1) )
-	//while ( (*s +2 ) <= n  )
-
 	{
 
 		int q[4] = {*x1, *x2, *s+1, *s+2};
@@ -721,10 +619,10 @@ void calcMax(int n, int* s, int* x1, int* x2, int* y1, int* xScore, int* yScore)
 		else
 		{
 			// Error 
-			printf("***ERROR CALC MAX: %d\n", r);
+			perror("QCOUNT - Invalid Result - Calc Max");
 		}
-		//printf("xScore: %d yScore %d Used: %d\n", *xScore, *yScore, *s);
 
+		// Early Stoppage
 		if (*xScore > (n/2)+1 || *yScore > (n/2)+1)
 		{
 			return;
@@ -732,15 +630,14 @@ void calcMax(int n, int* s, int* x1, int* x2, int* y1, int* xScore, int* yScore)
 
 	}
 
+	// Early Stoppage
 	if (*xScore > (n/2)+1 || *yScore > (n/2)+1)
 	{
 		return;
 	}
-	//printf("BEFORE SINGLE CASE: S: %d N/2+1: %d\n", *s, (n/2)+1);
-	// Handle Single Case
-	//if ( *xScore < (n/2)+1 && *yScore < (n/2)+1 && *s <= n)
-	if (  *s <= n)
 
+	// Handle Single Case
+	if (  *s <= n)
 	{
 		// S will be incremented past n to break out of above for loop
 		// Run query on last remaining index
@@ -763,12 +660,6 @@ void calcMax(int n, int* s, int* x1, int* x2, int* y1, int* xScore, int* yScore)
 			// xxyx
 			*xScore +=1;
 		}
-
-		//printf("Inside Single CASE: S: %d N/2+1: %d\n", *s, (n/2)+1);
-
-		//printf("xScore: %d yScore %d Used: %d\n", *xScore, *yScore, *s);
-
-
 	}
 
 }
