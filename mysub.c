@@ -2,6 +2,10 @@
 /*
 	Kevin Carlisle
 	#82682616
+
+	Nicholas Steven Popov
+	#
+
 	CS165 
 	Project # 2
 	Majority Count
@@ -430,6 +434,13 @@ void processTwos(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* ySco
 	int j;
 	int c = 0;
 
+	int t = 0;
+	// Create Array Of Indicies that are still unclassfied
+	// Will be paired 11000011001100
+	int subTwos[ 2*twoLen];
+	memset(subTwos, -1, 2*twoLen*sizeof(int));
+
+
 	for ( i = 0; i < twoLen; i++)
 	{
 		// Look at each 2 Case one at a time
@@ -457,31 +468,17 @@ void processTwos(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* ySco
 		else if ( r == 2)
 		{
 			// 11 | 01 
-			// Look at 3rd & 4th
-			int v3 = indicesArray[twosArray[i]]+2;
-			int v4 = indicesArray[twosArray[i]]+3;
 
-			int temp[4] = {*x1, *x2, v3, v4};
+			// Score What we looked at
+			*xScore += 1; 
+			*yScore += 1;
 
-			int r = QCOUNT(1, temp);
+			// Send 3rd & 4th to array to process later
+			subTwos[t]   = indicesArray[twosArray[i]]+2;
+			subTwos[t+1] = indicesArray[twosArray[i]]+3;
 
-			if ( r == 4)
-			{
-				// 11 | 11 01
-				*xScore += 3; 
-				*yScore += 1;
-			}
-			else if ( r == 0)
-			{
-				// 11 | 00 01
-				*xScore += 1; 
-				*yScore += 3;
-			}
-			else 
-			{
-				perror("QCOUNT - Invalid Result - Process Twos Else If Else");
-			}
-			
+			t += 2;
+
 		}
 		else 
 		{
@@ -494,6 +491,85 @@ void processTwos(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* ySco
 		}
 
 	}
+	//printf("T: %d\n", t);
+
+	for ( i = 0; i+4 <= t; i+=4)
+	{
+		// Process 2 at a time
+		// Know that array is formatted:
+		// 110011001111000011
+		// Process subTwos
+		int v3 = subTwos[i];
+		int v4 = subTwos[i+2];
+
+		int temp[4] = {*x1, *x2, v3, v4};
+
+		int r = QCOUNT(1, temp);
+
+		if ( r == 0)
+		{
+			// 11 | 00 00
+			*yScore += 4; 
+		}
+		else if ( r == 2)
+		{
+			// 11 | 00 01
+			*xScore += 2; 
+			*yScore += 2;
+		}
+		else if ( r == 4 )
+		{
+			// 11 | 11 11
+			*xScore += 4; 
+		}
+		else 
+		{
+			perror("QCOUNT - Invalid Result - Process Twos Else If Else");
+		}
+
+		if (*xScore > (n/2)+1 || *yScore > (n/2)+1)
+		{
+			return;
+		}
+
+	}
+
+	// Process Left
+	int left = t%4;
+	if ( left == 2 )
+	{
+		// Process Final 2
+		int v5 = subTwos[t-1];
+		int v6 = subTwos[t-2];
+
+		int temp[4] = {*x1, *x2, v5, v6};
+
+		int r = QCOUNT(1, temp);
+
+		if ( r == 0)
+		{
+			// 11 | 00
+			*yScore += 2; 
+		}
+		else if ( r == 4)
+		{
+			// 11 | 11
+			*xScore += 2; 
+		}
+		else 
+		{
+			perror("QCOUNT - Invalid Result - Process Twos Else If Else");
+		}
+
+		if (*xScore > (n/2)+1 || *yScore > (n/2)+1)
+		{
+			return;
+		}
+
+	}
+	
+
+
 }
 
 void processFours(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* yScore, int* used,
