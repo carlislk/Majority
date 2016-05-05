@@ -3,9 +3,6 @@
 	Kevin Carlisle
 	#82682616
 
-	Nicholas Steven Popov
-	#
-
 	CS165 
 	Project # 2
 	Majority Count
@@ -491,8 +488,8 @@ void processTwos(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* ySco
 		}
 
 	}
-	//printf("T: %d\n", t);
 
+	// TWO AT A TIME
 	for ( i = 0; i+4 <= t; i+=4)
 	{
 		// Process 2 at a time
@@ -534,7 +531,8 @@ void processTwos(int n, int s, int* x1, int* x2, int* y1, int* xScore, int* ySco
 
 	}
 
-	// Process Left
+
+	// Process 2's Left
 	int left = t%4;
 	if ( left == 2 )
 	{
